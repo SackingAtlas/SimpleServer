@@ -144,9 +144,11 @@ public class NetworkedServer : MonoBehaviour
         }
         else if (signifier == ClientToServerSignifiers.AddToGameSessionQueue)
         {
-            if(playerWaitingForMatch != -1)
+            Debug.Log(playerWaitingForMatch);
+            if (playerWaitingForMatch == -1)
             {
                 playerWaitingForMatch = id;
+                Debug.Log("ASDFDSAFDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
             }
             else
             {
