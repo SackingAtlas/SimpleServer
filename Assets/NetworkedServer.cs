@@ -148,7 +148,6 @@ public class NetworkedServer : MonoBehaviour
             if (playerWaitingForMatch == -1)
             {
                 playerWaitingForMatch = id;
-                Debug.Log("ASDFDSAFDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
             }
             else
             {
@@ -162,14 +161,13 @@ public class NetworkedServer : MonoBehaviour
         }
         else if (signifier == ClientToServerSignifiers.TicTacToePlay)
         {
-            //Debug.Log("out nest action item");
-
+            int lastPlay = int.Parse(csv[1]);
             GameSession gs = FindGamSessionWithPlayerID(id);
 
             if (gs.playerID1 == id)
-                SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "", gs.playerID2);
+                SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "," + lastPlay, gs.playerID2);
             else
-                SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "", gs.playerID1);
+                SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "," + lastPlay, gs.playerID1);
         }
     }
 
@@ -225,7 +223,7 @@ public class GameSession
     public GameSession(int PlayerID1, int PlayerID2)
     {
         playerID1 = PlayerID1;
-        playerID1 = PlayerID1;
+        playerID2 = PlayerID2;
     }
 }
 
@@ -250,4 +248,17 @@ public static class LoginResponses
     public const int FailureNameInUse = 2;
     public const int FailureNameNotFound = 3;
     public const int FailureIncorrectPassword = 4;
+}
+
+public static class SquarePlayedIn
+{
+    public const int TopLeft = 1;
+    public const int TopCenter = 2;
+    public const int TopRight = 3;
+    public const int MiddleLeft = 4;
+    public const int MiddleCenter = 5;
+    public const int MiddleRight = 6;
+    public const int BottomLeft = 7;
+    public const int BottomCenter = 8;
+    public const int BottomRight = 9;
 }
