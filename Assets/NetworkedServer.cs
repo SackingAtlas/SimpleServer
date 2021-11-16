@@ -153,8 +153,10 @@ public class NetworkedServer : MonoBehaviour
             {
                 GameSession gs = new GameSession(playerWaitingForMatch, id);
                 gameSessions.AddLast(gs);
-                SendMessageToClient(ServerToClientSignifiers.GameSessionStarted + "", id);
-                SendMessageToClient(ServerToClientSignifiers.GameSessionStarted + "", playerWaitingForMatch);
+                int turn1 = 1;
+                int turn2 = 2;
+                SendMessageToClient(ServerToClientSignifiers.GameSessionStarted + "," + turn1, id);
+                SendMessageToClient(ServerToClientSignifiers.GameSessionStarted + "," + turn2, playerWaitingForMatch);
 
                 playerWaitingForMatch = -1;
             }
