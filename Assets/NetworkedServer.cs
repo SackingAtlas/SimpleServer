@@ -144,14 +144,13 @@ public class NetworkedServer : MonoBehaviour
         }
         else if (signifier == ClientToServerSignifiers.AddToGameSessionQueue)
         {
-            Debug.Log(playerWaitingForMatch);
             if (playerWaitingForMatch == -1)
             {
                 playerWaitingForMatch = id;
             }
             else
             {
-                GameSession gs = new GameSession(playerWaitingForMatch, id);
+                GameSession gs = new GameSession(playerWaitingForMatch, id, 0);
                 gameSessions.AddLast(gs);
                 int turn1 = 1;
                 int turn2 = 2;
@@ -167,9 +166,23 @@ public class NetworkedServer : MonoBehaviour
             GameSession gs = FindGamSessionWithPlayerID(id);
 
             if (gs.playerID1 == id)
+            {
                 SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "," + lastPlay, gs.playerID2);
+                SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "," + lastPlay, gs.observerID);
+            }
             else
+            {
                 SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "," + lastPlay, gs.playerID1);
+                SendMessageToClient(ServerToClientSignifiers.OpponentTicTacToePlay + "," + lastPlay, gs.observerID);
+            }
+                
+        }
+        else if (signifier == ClientToServerSignifiers.AddOberverToSession)
+        {
+            //string gameSessionName = gameSessions.Last.ToString();
+            GameSession gs = gameSessions.Last.Value;
+            gs.observerID = id;
+            SendMessageToClient(ServerToClientSignifiers.ObserverEntered + "," , id);
         }
     }
 
@@ -220,12 +233,13 @@ public class PlayerAccount
 
 public class GameSession
 {
-    public int playerID1, playerID2;
+    public int playerID1, playerID2, observerID;
 
-    public GameSession(int PlayerID1, int PlayerID2)
+    public GameSession(int PlayerID1, int PlayerID2, int ObserverID)
     {
         playerID1 = PlayerID1;
         playerID2 = PlayerID2;
+        observerID = ObserverID;
     }
 }
 
@@ -235,6 +249,7 @@ public static class ClientToServerSignifiers
     public const int CreatAccount = 2;
     public const int AddToGameSessionQueue = 3;
     public const int TicTacToePlay = 4;
+    public const int AddOberverToSession = 5;
 }
 
 public static class ServerToClientSignifiers
@@ -242,6 +257,7 @@ public static class ServerToClientSignifiers
     public const int LoginResponse = 1;
     public const int GameSessionStarted = 2;
     public const int OpponentTicTacToePlay = 3;
+    public const int ObserverEntered = 4;
 }
 
 public static class LoginResponses
