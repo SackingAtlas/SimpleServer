@@ -199,6 +199,20 @@ public class NetworkedServer : MonoBehaviour
                 SendMessageToClient(ServerToClientSignifiers.Replay + "," + CellButtons[i], id);
             }
         }
+        else if (signifier == ClientToServerSignifiers.CommunicationPassing)
+        {
+            int MessagePassed = int.Parse(csv[1]);
+            GameSession gs = FindGamSessionWithPlayerID(id);
+
+            if (gs.playerID1 == id)
+            {
+                SendMessageToClient(ServerToClientSignifiers.PassedCommunication + "," + MessagePassed, gs.playerID2);
+            }
+            else
+            {
+                SendMessageToClient(ServerToClientSignifiers.PassedCommunication + "," + MessagePassed, gs.playerID1);
+            }
+        }
 }
 
     private void SavePlayerAccounts()
@@ -266,6 +280,7 @@ public static class ClientToServerSignifiers
     public const int TicTacToePlay = 4;
     public const int AddOberverToSession = 5;
     public const int ReplayRequest = 6;
+    public const int CommunicationPassing = 7;
 }
 
 public static class ServerToClientSignifiers
@@ -276,6 +291,7 @@ public static class ServerToClientSignifiers
     public const int ObserverEntered = 4;
     public const int ObserverCatchUp = 5;
     public const int Replay = 6;
+    public const int PassedCommunication = 7;
 }
 
 public static class LoginResponses
