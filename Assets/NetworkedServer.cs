@@ -17,6 +17,8 @@ public class NetworkedServer : MonoBehaviour
     string playerAccountFilePath;
     int playerWaitingForMatch = -1;
     LinkedList<GameSession> gameSessions;
+    int playCount = 0;
+    int[] CellButtons = new int[9];
 
     // Start is called before the first frame update
     void Start()
@@ -163,6 +165,8 @@ public class NetworkedServer : MonoBehaviour
         else if (signifier == ClientToServerSignifiers.TicTacToePlay)
         {
             int lastPlay = int.Parse(csv[1]);
+            CellButtons[playCount] = lastPlay;
+           ++playCount;
             GameSession gs = FindGamSessionWithPlayerID(id);
 
             if (gs.playerID1 == id)
@@ -182,9 +186,20 @@ public class NetworkedServer : MonoBehaviour
             //string gameSessionName = gameSessions.Last.ToString();
             GameSession gs = gameSessions.Last.Value;
             gs.observerID = id;
-            SendMessageToClient(ServerToClientSignifiers.ObserverEntered + "," , id);
+            SendMessageToClient(ServerToClientSignifiers.ObserverEntered + "," + playCount , id);
+            for (int i = 0; i < playCount; i++)
+            {
+                SendMessageToClient(ServerToClientSignifiers.ObserverCatchUp + "," + CellButtons[i], id);
+            }
         }
-    }
+        else if (signifier == ClientToServerSignifiers.ReplayRequest) 
+        {
+            for (int i = 0; i < playCount; i++)
+            {
+                SendMessageToClient(ServerToClientSignifiers.Replay + "," + CellButtons[i], id);
+            }
+        }
+}
 
     private void SavePlayerAccounts()
     {
@@ -250,6 +265,7 @@ public static class ClientToServerSignifiers
     public const int AddToGameSessionQueue = 3;
     public const int TicTacToePlay = 4;
     public const int AddOberverToSession = 5;
+    public const int ReplayRequest = 6;
 }
 
 public static class ServerToClientSignifiers
@@ -258,6 +274,8 @@ public static class ServerToClientSignifiers
     public const int GameSessionStarted = 2;
     public const int OpponentTicTacToePlay = 3;
     public const int ObserverEntered = 4;
+    public const int ObserverCatchUp = 5;
+    public const int Replay = 6;
 }
 
 public static class LoginResponses
